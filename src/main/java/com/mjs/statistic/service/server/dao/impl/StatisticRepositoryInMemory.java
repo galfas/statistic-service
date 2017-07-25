@@ -1,7 +1,6 @@
 package com.mjs.statistic.service.server.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +18,12 @@ public class StatisticRepositoryInMemory implements StatisticRepository {
     transactions.add(transaction);
   }
 
-  public List<Transaction> fetch(Long limit) {
-    updateTransactions(limit);
+  /**
+   * @param startTimeStamp
+   * @return
+   */
+  public List<Transaction> fetch(Long startTimeStamp) {
+    updateTransactions(startTimeStamp);
 
     return this.transactions.stream()
       .collect(Collectors.toList());

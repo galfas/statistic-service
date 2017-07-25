@@ -6,7 +6,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.mjs.statistic.service.server.business.StatisticBO;
@@ -31,7 +30,9 @@ public class StatisticBOImpl implements StatisticBO {
 
   private Timer timer = new Timer();
 
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void insert(Transaction transaction) {
     validateTransaction(transaction);
@@ -41,6 +42,9 @@ public class StatisticBOImpl implements StatisticBO {
     handleInsertionEffects(transaction);
   }
 
+  /**
+   *{@inheritDoc}
+   */
   public Summary getSummary() {
     return summary;
   }
@@ -53,6 +57,9 @@ public class StatisticBOImpl implements StatisticBO {
     updateSummary();
   }
 
+  /**
+   * this method is responsible for orchestrate the summary generation.
+   */
   private void updateSummary() {
     Long maxRange = calculateMinAcceptedTimeInMillis();
 
@@ -60,6 +67,12 @@ public class StatisticBOImpl implements StatisticBO {
     summary = generateSummary(transactionList);
   }
 
+  /**
+   * from a range of valid transactions this method is responsible to build Summary.
+   *
+   * @param transactionList List of transactions that are valid for the current scenario.
+   * @return current Summary based on the valid transactions.
+   */
   private Summary generateSummary(List<Transaction> transactionList) {
     Double min = Double.MAX_VALUE;
     Double max = Double.MIN_VALUE;
@@ -82,6 +95,11 @@ public class StatisticBOImpl implements StatisticBO {
       max, min, Long.valueOf(transactionList.size()));
   }
 
+  /**
+   * base on our set limit time range, it will give the time it should be expired from our Summary.
+   * @param transaction
+   * @return time that a given transaction will expire
+   */
   private Long calculateTransactionExpiration(Transaction transaction) {
     Long expirationTime = Instant.now().toEpochMilli() - transaction.getTimestamp();
     return serverConfiguration.getMaxRangeTime() - expirationTime;
@@ -95,12 +113,21 @@ public class StatisticBOImpl implements StatisticBO {
     }
   }
 
+  /**
+   * It will generate the least acceptable time (in millis) for a transaction,
+   * in other other the earliest acceptable time.
+   *
+   * @return least time in millis acceptable for a transaction to be considered valid.
+   */
   private Long calculateMinAcceptedTimeInMillis() {
     Long currentTimestamp = Instant.now().toEpochMilli();
 
     return currentTimestamp - serverConfiguration.getMaxRangeTime();
   }
 
+  /**
+   * Schedule class responsible to run the updateSummary in background.
+   */
   class StatisticUpdate extends TimerTask {
 
     @Override

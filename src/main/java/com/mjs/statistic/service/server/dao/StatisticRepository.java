@@ -8,7 +8,16 @@ import com.mjs.statistic.service.server.model.Transaction;
 
 public interface StatisticRepository {
 
+  /**
+   * Method reposible to insert a transaction into our repository.
+   * @param transaction
+   */
   void insert(Transaction transaction);
 
-  List<Transaction> fetch(Long limit);
+  /**
+   * Method responsible to fetch all transactions with date after a given time(in milliseconds epoch time)
+   * @param startTimeStamp
+   * @return list of Transaction that has a timestap bigger than its parameter.
+   */
+  List<Transaction> fetch(Long startTimeStamp);
 }
