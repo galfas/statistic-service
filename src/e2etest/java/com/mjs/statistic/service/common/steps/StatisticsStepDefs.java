@@ -25,7 +25,7 @@ public class StatisticsStepDefs {
 
   @Before
   public void setup() throws InterruptedException {
-    Thread.sleep(2000);
+    Thread.sleep(1000);
   }
 
   @When("^I request the summary$")
@@ -40,7 +40,7 @@ public class StatisticsStepDefs {
     summary = buildSummaryFrom(summaryAsMap);
   }
 
-  @When("^I request the summary with a delay of \"([^\"]*)\"$")
+  @When("^I wait \"([^\"]*)\" millis to  request the summary$")
   public void i_request_the_summary_with_a_delay_of(Integer amount) throws InterruptedException {
     Thread.sleep(amount);
     i_request_the_summary();
@@ -61,7 +61,6 @@ public class StatisticsStepDefs {
 
     assertThat(response.statusCode(), equalTo(201));
   }
-
 
   @Given("^I register a transaction from last day$")
   public void i_register_a_transaction_fron_last_day() {

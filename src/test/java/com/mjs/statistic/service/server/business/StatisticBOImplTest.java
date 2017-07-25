@@ -9,7 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.mjs.statistic.service.server.business.impl.StatisticBOimpl;
+import com.mjs.statistic.service.server.business.impl.StatisticBOImpl;
+import com.mjs.statistic.service.server.conf.ServerConfiguration;
 import com.mjs.statistic.service.server.dao.StatisticRepository;
 import com.mjs.statistic.service.server.model.Summary;
 import com.mjs.statistic.service.server.model.Transaction;
@@ -21,13 +22,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class StatisticBOimplTest {
+public class StatisticBOImplTest {
 
   @Mock
   private StatisticRepository statisticRepository;
 
+  @Mock
+  private ServerConfiguration serverConfiguration;
+
   @InjectMocks
-  StatisticBO statisticBO = new StatisticBOimpl();
+  StatisticBO statisticBO = new StatisticBOImpl();
 
   @Test
   public void shouldInsertTransactionIntoRepository() {
@@ -47,12 +51,8 @@ public class StatisticBOimplTest {
     verify(statisticRepository, times(0)).insert(transaction);
   }
 
-  private Transaction transactionBuilder(Double amount, Long timestamp) {
-    return new Transaction(amount, timestamp);
-  }
-
   @Test
-  public void shouldGenerateSummaryWithAllTransactionInRange() {
+  public void shouldGenerateSummaryWithFourTransactionsInTheRepository() {
     Long timestamp = Instant.now().toEpochMilli();
 
     Transaction transaction = transactionBuilder(Double.valueOf(10), timestamp);
@@ -66,7 +66,13 @@ public class StatisticBOimplTest {
     when(statisticRepository.fetch(anyLong()))
       .thenReturn(Arrays.asList(transaction, transaction2, transaction3, transaction4));
 
-    Summary currentSummary = statisticBO.fetchSummary();
+    when(serverConfiguration.getMaxRangeTime())
+      .thenReturn(60000);
+
+    //starts process achange
+    statisticBO.insert(transaction);
+
+    Summary currentSummary = statisticBO.getSummary();
 
     assertSummary(expectedSummary, currentSummary);
   }
@@ -83,7 +89,13 @@ public class StatisticBOimplTest {
     when(statisticRepository.fetch(anyLong()))
       .thenReturn(Arrays.asList(transaction));
 
-    Summary currentSummary = statisticBO.fetchSummary();
+    when(serverConfiguration.getMaxRangeTime())
+      .thenReturn(60000);
+
+    //starts process change
+    statisticBO.insert(transaction);
+
+    Summary currentSummary = statisticBO.getSummary();
 
     assertSummary(expectedSummary, currentSummary);
   }
@@ -92,15 +104,24 @@ public class StatisticBOimplTest {
   public void shouldGenerateSummaryWithAllTransactionOutOfRange() {
     Long timestamp = Instant.now().toEpochMilli();
 
-    Summary expectedSummary =
-      new Summary(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Long.valueOf(0));
+    Summary expectedSummary = Summary.emptySummaryBuilder();
 
     when(statisticRepository.fetch(anyLong()))
       .thenReturn(Arrays.asList());
 
-    Summary currentSummary = statisticBO.fetchSummary();
+    when(serverConfiguration.getMaxRangeTime())
+      .thenReturn(60000);
+
+    //starts process change
+    statisticBO.insert(new Transaction(Double.valueOf(0), timestamp));
+
+    Summary currentSummary = statisticBO.getSummary();
 
     assertSummary(expectedSummary, currentSummary);
+  }
+
+  private Transaction transactionBuilder(Double amount, Long timestamp) {
+    return new Transaction(amount, timestamp);
   }
 
   public void assertSummary(Summary expectedSummary, Summary resultSummary) {

@@ -52,8 +52,7 @@ public class StatisticsIntegrationTest extends AbstractIntegrationTest {
 
   @Test
   public void shouldRetrieveEmptySummary() throws Exception {
-    Summary expectedSummary =
-      new Summary(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Long.valueOf(0));
+    Summary expectedSummary = Summary.emptySummaryBuilder();
 
     MvcResult mvcResult = mockMvc.perform(get(
       "/statistics")

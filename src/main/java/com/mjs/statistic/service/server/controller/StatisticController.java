@@ -30,6 +30,6 @@ public class StatisticController extends BaseController {
   @RequestMapping(path = "/statistics")
   @ResponseStatus(HttpStatus.OK)
   public Summary fetchStatistics() throws IOException {
-    return statisticBO.fetchSummary();
+    return statisticBO.getSummary();
   }
 }

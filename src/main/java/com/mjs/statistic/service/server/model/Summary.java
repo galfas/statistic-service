@@ -37,4 +37,8 @@ public class Summary {
   public Long getCount() {
     return count;
   }
+
+  public static Summary emptySummaryBuilder(){
+    return new Summary(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), 0L);
+  }
 }

@@ -31,8 +31,8 @@ public class StatisticsControllerTest {
 
   @Test
   public void shouldRetrieveSummary() throws IOException {
-    Summary expectedSummary = summaryBuilder();
-    Mockito.when(statisticBO.fetchSummary()).thenReturn(expectedSummary);
+    Summary expectedSummary = Summary.emptySummaryBuilder();
+    Mockito.when(statisticBO.getSummary()).thenReturn(expectedSummary);
     Summary summary = statisticController.fetchStatistics();
 
     Assert.assertNotNull(summary);
@@ -52,10 +52,6 @@ public class StatisticsControllerTest {
     Transaction transaction = transactionBuilder();
     doThrow(new IllegalArgumentException()).when(statisticBO).insert(transaction);
     statisticController.insert(transaction);
-  }
-
-  private Summary summaryBuilder() {
-    return new Summary(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Long.valueOf(0));
   }
 
   private Transaction transactionBuilder() {

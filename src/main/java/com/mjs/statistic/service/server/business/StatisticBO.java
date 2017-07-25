@@ -7,5 +7,5 @@ public interface StatisticBO {
 
   void insert(Transaction transaction);
 
-  Summary fetchSummary();
+  Summary getSummary();
 }
