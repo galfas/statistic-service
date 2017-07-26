@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.omg.PortableServer.THREAD_POLICY_ID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ public class StatisticBOImpl implements StatisticBO {
 
     statisticRepository.insert(transaction);
 
-    handleInsertionEffects(transaction);
+    handleSummaryUpdate(transaction);
   }
 
   /**
@@ -49,7 +50,11 @@ public class StatisticBOImpl implements StatisticBO {
     return summary;
   }
 
-  private void handleInsertionEffects(Transaction transaction) {
+  /**
+   * This method is responsible for handle all the rules about when the summary should be updated
+   * @param transaction
+   */
+  private void handleSummaryUpdate(Transaction transaction) {
     Long nextJobTime = calculateTransactionExpiration(transaction);
     if (nextJobTime > 0) {
       timer.schedule(new StatisticUpdate(), nextJobTime);
@@ -60,7 +65,7 @@ public class StatisticBOImpl implements StatisticBO {
   /**
    * this method is responsible for orchestrate the summary generation.
    */
-  private void updateSummary() {
+  private synchronized void updateSummary() {
     Long maxRange = calculateMinAcceptedTimeInMillis();
 
     List<Transaction> transactionList = statisticRepository.fetch(maxRange);
