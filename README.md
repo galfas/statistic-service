@@ -1,12 +1,19 @@
 # This project provides a statistic services, 
  
-###This project should be used for external api's, in order to understand how is their behavior. It will store and summarise the api statistics.
+### This project should be used for external api's, in order to understand how is their behavior. It will store and summarise the api statistics.
 
-###tecnology
-This project is built in java 8 with spring boot and use an in-memory repository.
-
-## Testing
+### Tecnology
+This project is built in java 8 with spring boot, gradle and use an in-memory repository.
 The project comes ready with an instance of Gradle wrapper. 
+
+## Building
+To run the build for the project execute the following command from the project's root directory
+
+```
+./gradlew clbuild
+```
+
+## Testing 
 To run the tests for the project execute the following command from the project's root directory:
 
 ```
@@ -18,21 +25,21 @@ To run the tests for the project execute the following command from the project'
 
 ## Running
 
-###Docker 
+### Docker 
  It is possible to launch the application as a container, in this case you need to have docker installed in your server,
-  and then you just need to execute the next commands in the project root:
+  and then you just need to execute the next commands in the project's root:
   
  1. docker build -t statistics:0.0.1 .
  2. docker run -p 8080:8080 statistics:0.0.1
 
-###Terminal 
+### Terminal 
 This is a Spring Boot application, so it is packed as a jar. 
 To start the app, execute:
 ```
 java -jar <pathToJar>.jar
 
 ```
-- after run the command "./gradlew build", you can find the jar on "/build/libs/statistc-service-0.0.1.jar" from the project root
+- after run the command "./gradlew build", you can find the jar on "/build/libs/statistc-service-0.0.1.jar" from the project's root
 ###IDE
 Run the main class(Application.java) from any IDE.
 
